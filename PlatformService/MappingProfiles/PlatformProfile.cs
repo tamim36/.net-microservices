@@ -8,7 +8,9 @@ namespace PlatformService.MappingProfiles
     {
         public PlatformProfile()
         {
-            CreateMap<Platform, PlatformReadDto>();
+            CreateMap<Platform, PlatformReadDto>()
+                .ForMember(dest => dest.PlatformName, 
+                                act => act.MapFrom(src => src.Name));
             CreateMap<PlatformCreateDto, Platform>();
         }
     }
