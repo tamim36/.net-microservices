@@ -12,6 +12,7 @@ namespace PlatformService.MappingProfiles
                 .ForMember(dest => dest.PlatformName, 
                                 act => act.MapFrom(src => src.Name));
             CreateMap<PlatformCreateDto, Platform>();
+            CreateMap<PlatformReadDto, PlatformPublishedDto>();
         }
     }
 }
