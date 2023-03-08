@@ -18,6 +18,7 @@ namespace CommandService.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet]
         public ActionResult<IEnumerable<PlatformreadDto>> GetPlatforms()
         {
             Console.WriteLine("--> Getting Platforms from CommandService");

@@ -6,6 +6,7 @@ using System.Text.Json;
 
 namespace CommandService.EventProcessing
 {
+    // watch 8:40
     public class EventProcessor : IEventProcessor
     {
         private readonly IServiceScopeFactory _scopeFactory;
@@ -24,7 +25,7 @@ namespace CommandService.EventProcessing
 
             switch (eventType?.Event)
             {
-                case "Platform_Published":
+                case "Platform_Publish":
                     Console.WriteLine("--> Platform Published Event Detected");
                     return EventType.PlatformPublishedEvent;
                 default:
@@ -47,6 +48,7 @@ namespace CommandService.EventProcessing
                     {
                         repo.CreatePlatform(plat);
                         repo.SaveChanges();
+                        Console.WriteLine("--> Platform add Successfully !!!");
                     }
                     else
                     {
@@ -62,7 +64,16 @@ namespace CommandService.EventProcessing
 
         public void ProcessEvent(string message)
         {
-            throw new NotImplementedException();
+            var eventType = DetermineEvent(message);
+
+            switch (eventType)
+            {
+                case EventType.PlatformPublishedEvent:
+                    addPlatform(message);
+                    break;
+                default:
+                    break;
+            }
         }
 
         

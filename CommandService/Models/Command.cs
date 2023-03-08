@@ -8,7 +8,8 @@ namespace CommandService.Models
         [Required]
         public int Id { get; set; }
 
-        public string Process { get; set;}
+        [Required]
+        public string HowTo { get; set;}
 
         [Required]
         public string CommandLine { get; set; }
