@@ -24,14 +24,21 @@ namespace CommandService.AsyncDataServices
         private void InitializeRabbitMQ()
         {
             var factory = new ConnectionFactory() { HostName = _configuration["RabbitMQHost"], Port = int.Parse(_configuration["RabbitMQPort"]) };
-            _connection = factory.CreateConnection();
-            _channel = _connection.CreateModel();
-            _channel.ExchangeDeclare(exchange: "trigger", type: ExchangeType.Fanout);
-            _queueName = _channel.QueueDeclare().QueueName;
-            _channel.QueueBind(queue: _queueName, exchange: "trigger", routingKey: "");
+            try
+            {
+                _connection = factory.CreateConnection();
+                _channel = _connection.CreateModel();
+                _channel.ExchangeDeclare(exchange: "trigger", type: ExchangeType.Fanout);
+                _queueName = _channel.QueueDeclare().QueueName;
+                _channel.QueueBind(queue: _queueName, exchange: "trigger", routingKey: "");
 
-            Console.WriteLine("--> Listening on the message Bus...");
-            _connection.ConnectionShutdown += RabbitMq_ConnectionShutdown;
+                Console.WriteLine("--> Listening on the message Bus...");
+                _connection.ConnectionShutdown += RabbitMq_ConnectionShutdown;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"RabbitMq not connected {ex.Message}");
+            }
         }
 
         private void RabbitMq_ConnectionShutdown(object sender, ShutdownEventArgs e)
@@ -51,22 +58,30 @@ namespace CommandService.AsyncDataServices
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            stoppingToken.ThrowIfCancellationRequested();
-
-            var consumer = new EventingBasicConsumer(_channel);
-
-            consumer.Received += (ModuleHandle, ea) =>
+            try
             {
-                Console.WriteLine("--> Event received");
+                stoppingToken.ThrowIfCancellationRequested();
 
-                var body = ea.Body;
-                var notificationMessage = Encoding.UTF8.GetString(body.ToArray());
+                var consumer = new EventingBasicConsumer(_channel);
 
-                _eventProcessor.ProcessEvent(notificationMessage);
-            };
+                consumer.Received += (ModuleHandle, ea) =>
+                {
+                    Console.WriteLine("--> Event received");
 
-            _channel.BasicConsume(queue: _queueName, autoAck: true, consumer: consumer);
-            return Task.CompletedTask;
+                    var body = ea.Body;
+                    var notificationMessage = Encoding.UTF8.GetString(body.ToArray());
+
+                    _eventProcessor.ProcessEvent(notificationMessage);
+                };
+                if (!string.IsNullOrEmpty(_queueName))
+                    _channel.BasicConsume(queue: _queueName, autoAck: true, consumer: consumer);
+                return Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"RabbitMq cancellation token {ex.Message}");
+                return Task.CompletedTask;
+            }
         }
     }
 }

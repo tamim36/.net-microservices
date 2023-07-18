@@ -1,0 +1,30 @@
+One Cluster can have multiple Node and one Node can have muliple pod and One pod can run multiple container. 
+Pod is used to run container.
+
+- NodePorts: nodeport is for development purpose to get access to the pods. 3xxxx -> external port mapping and 80 -> internal port mapping
+- clusterip: is used to pod to pod internal communication.
+- Ingress Nginx Container: is a gateway for production purpose.
+- Ingress Nginx Load Balancer: to receive external call
+
+Docker Commands
+-> D:\WorkStation\.net-microservices\PlatformService>docker build -t tamimarefinanik/platformservice .  (to build as image)
+-> >docker run -p 8080:80 tamimarefinanik/platformservice  (run and mapping port 8080->docker port and 80->app port)
+-> docker image prune -a  (destroy/delete all images)
+-> docker container prune
+-> docker --version
+
+Kubernetes commands
+-> kubectl version
+-> kubectl apply -f platforms-depl.yaml     		(create deployment)
+-> kubectl delete deployment platforms-depl    		(delete deployment) 
+-> kubectl rollout restart deployment platforms-depl 	(pull latest image from dockerhub and deploy)
+-> kubectl get deployments
+-> kubectl get pods
+-> kubectl get services
+-> kubectl get namespace
+-> kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.48.1/deploy/static/provider/cloud/deploy.yaml (for ingress controller)
+-> kubectl get pods --namespace=ingress-nginx
+-> kubectl get services --namespace=ingress-nginx
+-> kubectl get pvc (check persistent volume class)
+-> kubectl get storageclass
+-> kubectl create secret generic mssql --from-literal=SA_PASSWORD="admin12345"
