@@ -60,5 +60,5 @@ Please ⭐️ this repository if this project helped you!
 
 ## 📝 License
 
-Copyright © 2019 [Tamim Arefin Anik](https://github.com/tamim36).<br />
+Copyright © 2023 [Tamim Arefin Anik](https://github.com/tamim36).<br />
 This project is [MIT](https://choosealicense.com/licenses/mit/) licensed.
